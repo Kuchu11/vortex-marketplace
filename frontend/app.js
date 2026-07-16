@@ -29,7 +29,6 @@ function renderAnuncios(anuncios = []) {
     img.alt = anuncio.titulo;
 
     const info = document.createElement("div");
-    img.className = "product-image";
     info.className = "product-info";
 
     const title = document.createElement("h3");
@@ -55,6 +54,61 @@ function renderAnuncios(anuncios = []) {
   });
 }
 
+async function cadastrarAnuncio(event) {
+  event.preventDefault();
+
+  const titulo = document.getElementById("titulo").value;
+  const categoria = document.getElementById("categoria").value;
+  const preco = parseFloat(document.getElementById("preco").value);
+  const imagem_url = document.getElementById("imagem_url").value;
+  const descricao = document.getElementById("descricao").value;
+
+  const novoAnuncio = { titulo, categoria, preco, imagem_url, descricao };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(novoAnuncio)
+    });
+
+    if (response.ok) {
+      document.getElementById("form-anuncio").reset();
+      toggleModal(false);
+      fetchAnuncios();
+    } else {
+      alert("Erro ao cadastrar anúncio.");
+    }
+  } catch (error) {
+    console.error("Erro na requisição:", error);
+  }
+}
+
+function toggleModal(show = true) {
+  const overlay = document.getElementById("modal-overlay");
+  if (!overlay) return;
+  if (show) {
+    overlay.classList.add("active");
+  } else {
+    overlay.classList.remove("active");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   fetchAnuncios();
+
+  const btnOpen = document.getElementById("btn-open-modal");
+  const btnClose = document.getElementById("btn-close-modal");
+  const overlay = document.getElementById("modal-overlay");
+  const form = document.getElementById("form-anuncio");
+
+  if (btnOpen) btnOpen.addEventListener("click", () => toggleModal(true));
+  if (btnClose) btnClose.addEventListener("click", () => toggleModal(false));
+  if (form) form.addEventListener("submit", cadastrarAnuncio);
+
+  if (overlay) {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) toggleModal(false);
+    });
+  }
 });

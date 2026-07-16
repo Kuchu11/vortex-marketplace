@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import engine, get_db
 import models
@@ -7,6 +8,14 @@ import schemas
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Marketplace Universitario API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/anuncios", response_model=schemas.AnuncioResponse, status_code=201)
 def create_anuncio(anuncio: schemas.AnuncioCreate, db: Session = Depends(get_db)) -> models.Anuncio:

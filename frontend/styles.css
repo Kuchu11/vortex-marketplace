@@ -133,7 +133,7 @@ body {
   font-size: 14px;
   color: #5f6368;
 }
-/* --- Estilos do Modal --- */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -235,6 +235,7 @@ body {
   width: 100%;
   margin-top: var(--space-sm);
 }
+
 .btn-delete {
   background-color: transparent;
   color: #d32f2f;
@@ -253,4 +254,34 @@ body {
 .btn-delete:hover {
   background-color: #d32f2f;
   color: #ffffff;
+}
+
+.filter-container {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.btn-filter {
+  background-color: var(--surface-card);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--rounded-full);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-filter:hover {
+  border-color: var(--primary);
+  background-color: rgba(0, 19, 96, 0.05);
+}
+
+.btn-filter.active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
 }

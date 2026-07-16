@@ -1,4 +1,5 @@
 const API_URL = "http://127.0.0.1:8000/anuncios";
+let todosOsAnuncios = [];
 
 async function fetchAnuncios(url = API_URL) {
   try {
@@ -6,8 +7,8 @@ async function fetchAnuncios(url = API_URL) {
     if (!response.ok) {
       throw new Error(`Erro HTTP: ${response.status}`);
     }
-    const anuncios = await response.json();
-    renderAnuncios(anuncios);
+    todosOsAnuncios = await response.json();
+    renderAnuncios(todosOsAnuncios);
   } catch (error) {
     console.error("Falha ao buscar anúncios:", error);
   }
@@ -43,7 +44,6 @@ function renderAnuncios(anuncios = []) {
     desc.className = "product-description";
     desc.textContent = anuncio.descricao;
 
-    
     const btnDelete = document.createElement("button");
     btnDelete.className = "btn-delete";
     btnDelete.textContent = "Remover Anúncio";
@@ -59,6 +59,17 @@ function renderAnuncios(anuncios = []) {
 
     grid.appendChild(card);
   });
+}
+
+function filtrarCategoria(categoria) {
+  if (categoria === "todos") {
+    renderAnuncios(todosOsAnuncios);
+  } else {
+    const filtrados = todosOsAnuncios.filter(
+      (anuncio) => anuncio.categoria.toLowerCase() === categoria.toLowerCase()
+    );
+    renderAnuncios(filtrados);
+  }
 }
 
 async function cadastrarAnuncio(event) {
@@ -138,4 +149,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === overlay) toggleModal(false);
     });
   }
+
+  const botoesFiltro = document.querySelectorAll(".btn-filter");
+  botoesFiltro.forEach((botao) => {
+    botao.addEventListener("click", () => {
+      botoesFiltro.forEach((btn) => btn.classList.remove("active"));
+      botao.classList.add("active");
+      const categoria = botao.getAttribute("data-category");
+      filtrarCategoria(categoria);
+    });
+  });
 });

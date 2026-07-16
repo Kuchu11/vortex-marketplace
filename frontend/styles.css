@@ -235,3 +235,22 @@ body {
   width: 100%;
   margin-top: var(--space-sm);
 }
+.btn-delete {
+  background-color: transparent;
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--rounded-md);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: var(--space-md);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+  color: #ffffff;
+}

@@ -43,9 +43,16 @@ function renderAnuncios(anuncios = []) {
     desc.className = "product-description";
     desc.textContent = anuncio.descricao;
 
+    
+    const btnDelete = document.createElement("button");
+    btnDelete.className = "btn-delete";
+    btnDelete.textContent = "Remover Anúncio";
+    btnDelete.addEventListener("click", () => excluirAnuncio(anuncio.id));
+
     info.appendChild(title);
     info.appendChild(price);
     info.appendChild(desc);
+    info.appendChild(btnDelete);
 
     card.appendChild(img);
     card.appendChild(info);
@@ -81,6 +88,26 @@ async function cadastrarAnuncio(event) {
     }
   } catch (error) {
     console.error("Erro na requisição:", error);
+  }
+}
+
+async function excluirAnuncio(id) {
+  if (!confirm("Tem certeza que deseja remover este anúncio?")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE"
+    });
+
+    if (response.ok) {
+      fetchAnuncios();
+    } else {
+      alert("Erro ao excluir o anúncio.");
+    }
+  } catch (error) {
+    console.error("Erro ao deletar:", error);
   }
 }
 

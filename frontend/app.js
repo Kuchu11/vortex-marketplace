@@ -1,5 +1,7 @@
 const API_URL = "http://127.0.0.1:8000/anuncios";
 let todosOsAnuncios = [];
+let categoriaAtiva = "todos";
+let textoBusca = "";
 
 async function fetchAnuncios(url = API_URL) {
   try {
@@ -8,7 +10,7 @@ async function fetchAnuncios(url = API_URL) {
       throw new Error(`Erro HTTP: ${response.status}`);
     }
     todosOsAnuncios = await response.json();
-    renderAnuncios(todosOsAnuncios);
+    filtrarEAplicar();
   } catch (error) {
     console.error("Falha ao buscar anúncios:", error);
   }
@@ -23,6 +25,12 @@ function renderAnuncios(anuncios = []) {
   anuncios.forEach((anuncio) => {
     const card = document.createElement("div");
     card.className = "product-card";
+
+    const btnDelete = document.createElement("button");
+    btnDelete.className = "btn-delete";
+    btnDelete.innerHTML = "&times;";
+    btnDelete.title = "Remover Anúncio";
+    btnDelete.addEventListener("click", () => excluirAnuncio(anuncio.id));
 
     const img = document.createElement("img");
     img.className = "product-image";
@@ -44,16 +52,22 @@ function renderAnuncios(anuncios = []) {
     desc.className = "product-description";
     desc.textContent = anuncio.descricao;
 
-    const btnDelete = document.createElement("button");
-    btnDelete.className = "btn-delete";
-    btnDelete.textContent = "Remover Anúncio";
-    btnDelete.addEventListener("click", () => excluirAnuncio(anuncio.id));
+    const actions = document.createElement("div");
+    actions.className = "card-actions";
+
+    const btnInterest = document.createElement("button");
+    btnInterest.className = "btn-interest";
+    btnInterest.textContent = "Tenho Interesse";
+    btnInterest.addEventListener("click", () => abrirModalContato(anuncio));
+
+    actions.appendChild(btnInterest);
 
     info.appendChild(title);
     info.appendChild(price);
     info.appendChild(desc);
-    info.appendChild(btnDelete);
+    info.appendChild(actions);
 
+    card.appendChild(btnDelete);
     card.appendChild(img);
     card.appendChild(info);
 
@@ -61,15 +75,41 @@ function renderAnuncios(anuncios = []) {
   });
 }
 
-function filtrarCategoria(categoria) {
-  if (categoria === "todos") {
-    renderAnuncios(todosOsAnuncios);
-  } else {
-    const filtrados = todosOsAnuncios.filter(
-      (anuncio) => anuncio.categoria.toLowerCase() === categoria.toLowerCase()
+function filtrarEAplicar() {
+  let filtrados = todosOsAnuncios;
+
+  if (categoriaAtiva !== "todos") {
+    filtrados = filtrados.filter(
+      (anuncio) => anuncio.categoria.toLowerCase() === categoriaAtiva.toLowerCase()
     );
-    renderAnuncios(filtrados);
   }
+
+  if (textoBusca.trim() !== "") {
+    const termo = textoBusca.toLowerCase();
+    filtrados = filtrados.filter(
+      (anuncio) =>
+        anuncio.titulo.toLowerCase().includes(termo) ||
+        anuncio.descricao.toLowerCase().includes(termo)
+    );
+  }
+
+  renderAnuncios(filtrados);
+}
+
+function formatarMoeda(valorStr) {
+  let valorLimpo = valorStr.replace(/\D/g, "");
+  if (valorLimpo === "") return "";
+  let valorCentavos = parseFloat(valorLimpo) / 100;
+  return valorCentavos.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+}
+
+function obterValorDecimal(valorFormatado) {
+  let valorLimpo = valorFormatado.replace(/\D/g, "");
+  if (valorLimpo === "") return 0;
+  return parseFloat(valorLimpo) / 100;
 }
 
 async function cadastrarAnuncio(event) {
@@ -77,7 +117,8 @@ async function cadastrarAnuncio(event) {
 
   const titulo = document.getElementById("titulo").value;
   const categoria = document.getElementById("categoria").value;
-  const preco = parseFloat(document.getElementById("preco").value);
+  const precoFormatado = document.getElementById("preco").value;
+  const preco = obterValorDecimal(precoFormatado);
   const imagem_url = document.getElementById("imagem_url").value;
   const descricao = document.getElementById("descricao").value;
 
@@ -132,6 +173,35 @@ function toggleModal(show = true) {
   }
 }
 
+function abrirModalContato(anuncio) {
+  const overlay = document.getElementById("contact-overlay");
+  const titleElem = document.getElementById("contact-item-title");
+  const priceElem = document.getElementById("contact-item-price");
+  const whatsappBtn = document.getElementById("contact-whatsapp");
+  const emailBtn = document.getElementById("contact-email");
+
+  if (!overlay) return;
+
+  titleElem.textContent = anuncio.titulo;
+  priceElem.textContent = `R$ ${anuncio.preco.toFixed(2)}`;
+
+  const celularSimulado = "5585999999999"; 
+  const mensagem = encodeURIComponent(`Olá, vi seu anúncio do item "${anuncio.titulo}" no Vortex Marketplace e tenho interesse!`);
+  whatsappBtn.href = `https://wa.me/${celularSimulado}?text=${mensagem}`;
+
+  const emailSimulado = "vendedor@unifor.br";
+  emailBtn.href = `mailto:${emailSimulado}?subject=Vortex%20Marketplace%20-%20Interesse%20no%20item%20${encodeURIComponent(anuncio.titulo)}`;
+
+  overlay.classList.add("active");
+}
+
+function fecharModalContato() {
+  const overlay = document.getElementById("contact-overlay");
+  if (overlay) {
+    overlay.classList.remove("active");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   fetchAnuncios();
 
@@ -139,6 +209,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnClose = document.getElementById("btn-close-modal");
   const overlay = document.getElementById("modal-overlay");
   const form = document.getElementById("form-anuncio");
+  const precoInput = document.getElementById("preco");
+  const searchInput = document.getElementById("search-input");
+
+  const btnCloseContact = document.getElementById("btn-close-contact");
+  const contactOverlay = document.getElementById("contact-overlay");
 
   if (btnOpen) btnOpen.addEventListener("click", () => toggleModal(true));
   if (btnClose) btnClose.addEventListener("click", () => toggleModal(false));
@@ -150,13 +225,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (btnCloseContact) btnCloseContact.addEventListener("click", fecharModalContato);
+  if (contactOverlay) {
+    contactOverlay.addEventListener("click", (e) => {
+      if (e.target === contactOverlay) fecharModalContato();
+    });
+  }
+
+  if (precoInput) {
+    precoInput.addEventListener("input", (e) => {
+      e.target.value = formatarMoeda(e.target.value);
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      textoBusca = e.target.value;
+      filtrarEAplicar();
+    });
+  }
+
   const botoesFiltro = document.querySelectorAll(".btn-filter");
   botoesFiltro.forEach((botao) => {
     botao.addEventListener("click", () => {
       botoesFiltro.forEach((btn) => btn.classList.remove("active"));
       botao.classList.add("active");
-      const categoria = botao.getAttribute("data-category");
-      filtrarCategoria(categoria);
+      categoriaAtiva = botao.getAttribute("data-category");
+      filtrarEAplicar();
     });
   });
 });

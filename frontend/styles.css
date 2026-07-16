@@ -66,6 +66,9 @@ body {
   cursor: pointer;
   box-shadow: var(--shadow-level-1);
   transition: background-color 0.2s ease, transform 0.1s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn-primary:hover {
@@ -85,6 +88,29 @@ body {
   margin-bottom: var(--space-lg);
 }
 
+.search-container {
+  margin-bottom: var(--space-lg);
+  width: 100%;
+}
+
+#search-input {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--rounded-lg);
+  font-size: 16px;
+  font-family: inherit;
+  box-shadow: var(--shadow-level-1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--surface-card);
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 19, 96, 0.1);
+}
+
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -92,12 +118,21 @@ body {
 }
 
 .product-card {
+  position: relative;
   background-color: var(--surface-card);
   border: 1px solid var(--outline-variant);
   border-radius: var(--rounded-lg);
   overflow: hidden;
   box-shadow: var(--shadow-level-1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
 .product-card:hover {
@@ -113,6 +148,8 @@ body {
 
 .product-info {
   padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
 }
 
 .product-title {
@@ -132,6 +169,13 @@ body {
 .product-description {
   font-size: 14px;
   color: #5f6368;
+  margin-bottom: var(--space-md);
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
 }
 
 .modal-overlay {
@@ -237,23 +281,48 @@ body {
 }
 
 .btn-delete {
-  background-color: transparent;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
   color: #d32f2f;
   border: 1px solid #d32f2f;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--rounded-md);
-  font-size: 12px;
-  font-weight: 600;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
   cursor: pointer;
-  margin-top: var(--space-md);
-  transition: background-color 0.2s ease, color 0.2s ease;
-  width: 100%;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 10;
 }
 
 .btn-delete:hover {
   background-color: #d32f2f;
   color: #ffffff;
+  transform: scale(1.1);
+}
+
+.btn-interest {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--rounded-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-interest:hover {
+  filter: brightness(1.2);
 }
 
 .filter-container {
@@ -284,4 +353,55 @@ body {
   background-color: var(--primary);
   color: var(--on-primary);
   border-color: var(--primary);
+}
+
+.contact-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.contact-subtitle {
+  font-size: 14px;
+  color: #5f6368;
+  line-height: 1.4;
+}
+
+.contact-item {
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: var(--space-base);
+}
+
+.contact-label {
+  color: var(--outline);
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.btn-whatsapp {
+  background-color: #25d366;
+}
+
+.btn-whatsapp:hover {
+  background-color: #1ebd5c;
+}
+
+.btn-email-link {
+  text-align: center;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn-email-link:hover {
+  text-decoration: underline;
 }

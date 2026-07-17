@@ -133,6 +133,8 @@ async function cadastrarAnuncio(event) {
 
     if (response.ok) {
       document.getElementById("form-anuncio").reset();
+      const helpBox = document.getElementById("help-box");
+      if (helpBox) helpBox.classList.remove("active");
       toggleModal(false);
       fetchAnuncios();
     } else {
@@ -215,6 +217,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCloseContact = document.getElementById("btn-close-contact");
   const contactOverlay = document.getElementById("contact-overlay");
 
+  const btnHelp = document.getElementById("btn-help-trigger");
+  const helpBox = document.getElementById("help-box");
+  const btnCopy = document.getElementById("btn-copy-example");
+
   if (btnOpen) btnOpen.addEventListener("click", () => toggleModal(true));
   if (btnClose) btnClose.addEventListener("click", () => toggleModal(false));
   if (form) form.addEventListener("submit", cadastrarAnuncio);
@@ -242,6 +248,25 @@ document.addEventListener("DOMContentLoaded", () => {
     searchInput.addEventListener("input", (e) => {
       textoBusca = e.target.value;
       filtrarEAplicar();
+    });
+  }
+
+  if (btnHelp && helpBox) {
+    btnHelp.addEventListener("click", () => {
+      helpBox.classList.toggle("active");
+    });
+  }
+
+  if (btnCopy) {
+    btnCopy.addEventListener("click", () => {
+      const exampleText = document.getElementById("example-link").textContent;
+      navigator.clipboard.writeText(exampleText).then(() => {
+        const originalText = btnCopy.textContent;
+        btnCopy.textContent = "Copiado!";
+        setTimeout(() => {
+          btnCopy.textContent = originalText;
+        }, 1500);
+      });
     });
   }
 

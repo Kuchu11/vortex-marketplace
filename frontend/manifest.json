@@ -1,0 +1,22 @@
+{
+  "name": "Vortex Marketplace",
+  "short_name": "Vortex",
+  "description": "Marketplace de Economia Circular Universitária",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7f9fc",
+  "theme_color": "#001360",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1170/1170576.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

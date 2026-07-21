@@ -279,4 +279,10 @@ document.addEventListener("DOMContentLoaded", () => {
       filtrarEAplicar();
     });
   });
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch((error) => {
+      console.error("Falha ao registrar Service Worker:", error);
+    });
+  }
 });
